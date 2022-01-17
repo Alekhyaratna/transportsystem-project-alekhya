@@ -1,0 +1,11 @@
+httplistener:
+   host: "localhost"
+   port: "8085"
+   
+httprequester8084:
+   host: "localhost"
+   port: "8084"
+httprequester8083:
+   host: "localhost"
+   port: "8083"
+   

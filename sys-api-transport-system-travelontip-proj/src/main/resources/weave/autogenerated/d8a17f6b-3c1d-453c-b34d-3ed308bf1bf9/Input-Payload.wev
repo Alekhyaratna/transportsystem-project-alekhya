@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_d8a17f6b_3c1d_453c_b34d_3ed308bf1bf9_Input_Payload = Array<{  destinationLocation: {    locationCode: String,     _?: Any  },   originLocation: {    locationCode: String,     _?: Any  },   _?: Any}>
+

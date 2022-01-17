@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="0dc9f2c4-969f-4539-b30b-7d954031980a" >
+		<http:listener-connection host="${httplistener.host}" port="${httplistener.port}" />
+	</http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="eb2a098e-f917-4c18-b784-1798375e450f" file="properties\globalConfiguration.yaml" />
+	<flow name="fastgo-bookingsystemFlow" doc:id="44635a77-2883-4ff4-94b4-caa020ea9868" >
+		<http:listener doc:name="Listener" doc:id="db6a2751-4615-425f-9ddd-7cb365ef6497" config-ref="HTTP_Listener_config" path="${httplistener.path}"/>
+		<ee:transform doc:name="Transform Message" doc:id="e94ec7af-3063-4a46-ab7f-71b77eb70a01" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="transactionId" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.headers.transactionId]]></ee:set-variable>
+				<ee:set-variable variableName="transportType" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.uriParams.transportType]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="690061a1-0bb2-4bcc-bbd4-42adaa747079" message="request recieved fastgo---#[vars.transactionId]"/>
+		<choice doc:name="Choice" doc:id="65ffcf9c-b7f3-415b-9f94-10d8944f140d" >
+			<when expression='#[vars.transportType=="routes"]'>
+				<logger level="INFO" doc:name="Logger" doc:id="8f187b3e-7d2d-49ca-8d36-8224b3ade8b7" message="routes----#[vars.transactionId]"/>
+				<flow-ref doc:name="Flow Reference" doc:id="71ec406c-363b-458c-ae46-3bfcf0d258f9" name="fastgo-GR-implementationSub_Flow"/>
+			</when>
+			<when expression='#[vars.transportType=="schedules"]'>
+				<logger level="INFO" doc:name="Logger" doc:id="2e777d4d-87f3-4195-9665-e201a86cb938" message="schedules----#[vars.transactionId]"/>
+				<flow-ref doc:name="Flow Reference" doc:id="e9f80ba3-061f-4e55-8062-185e781b7959" name="fastgo-GS-implementationSub_Flow"/>
+			</when>
+			<otherwise >
+				<logger level="DEBUG" doc:name="Logger" doc:id="627d68d5-84ea-4257-a06d-037c34c06311" message="given uriParam in incorrect"/>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="0efaf446-d45c-4386-bc8f-0804daa0d04e" message="response sent -----#[vars.transactionId]"/>
+	</flow>
+</mule>

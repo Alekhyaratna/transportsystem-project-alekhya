@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="14a772c0-34e0-4a75-8141-650c8ecc3bba" >
+		<db:my-sql-connection host="${database.host}" port="${database.port}" user="${database.user}" password="${database.password}" database="${database.schema}" />
+	</db:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="9d1a7b35-309a-4647-8495-ddc0fa3cfdcf" file="properties\globalConfiguration.yaml" />
+	<configuration doc:name="Configuration" doc:id="8348dc49-189b-4250-9523-520bd0bef024" defaultErrorHandler-ref="globalErrorHandler.fastgo-ext" />
+	<sub-flow name="fastgo-GR-implementationSub_Flow" doc:id="1d21b09b-c77d-4688-a9b8-a248b2c18c8c" >
+		<db:select doc:name="Select for fastgo routes" doc:id="7e9e0c0d-1adb-4173-bf09-9f8b33d2a4e7" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT * FROM transportsystem.routes  where companyName= "fastGo";]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="260666a7-ddaf-443c-9d0e-7a4fbe1329e9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>

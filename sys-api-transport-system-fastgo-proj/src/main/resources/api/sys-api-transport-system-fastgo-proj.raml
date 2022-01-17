@@ -1,0 +1,134 @@
+#%RAML 1.0
+title: sys-api-transport-system-fastGo-proj
+
+/{transportType}:
+  /{transportCompany}:
+    /routes:
+      get:
+        headers:
+          transactionId:
+            required: true
+            type: string
+            example: "hdsfhjdh-jxbv859-sjdf7643-3746bbd"
+        responses:
+          200:
+            body:
+              application/json:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    departureLocationCode:
+                      required: true
+                      type: string
+                      example: "BEN-SG"
+                    arrivalLocationCode:
+                      required: true
+                      type: string
+                      example: "KLG-MY"
+                example:
+                  [
+{
+"departureLocationCode": "BEN-SG", "arrivalLocationCode": "KLG-MY"
+},
+{
+"departureLocationCode": "BEN-SG", "arrivalLocationCode": "BU-MY"
+  }
+]
+          400:
+           body:
+             application/json:
+              type: object
+              properties:
+                status:
+                  type: number
+                  required: true
+                  example: 400
+                message:
+                  type: string
+                  required: true
+                  example: "error message"
+              example:
+                 {
+                   status: 400,
+                   message: "bad request"
+                 }
+    /schedules:
+      get:
+        headers:
+          transactionId:
+            required: true
+            type: string
+            example: "hdsfhjdh-jxbv859-sjdf7643-3746bbd"
+        queryParameters:
+          departureLocationCode:
+            required: false
+            type: string
+            example:
+              "BEN-SG"
+          destinationLocationCode:
+            required: false
+            type: string
+            example:
+              "KLG-MY"
+        responses:
+          200:
+            body:
+              application/json:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    departureDateTime:
+                      required: true
+                      type: string
+                      example: "2019-04-30T16:41:41.090Z"
+                    fromLocation:
+                      required: true
+                      type: string
+                      example: "BEN-SG"
+                    toLocation:
+                      required: true
+                      type: string
+                      example: "KLG-MY"
+                    availableSeats:
+                      required: true
+                      type: number
+                      example: 20    
+                example:
+                    [
+
+{
+"departureDateTime": "2019-04-30T16:41:41.090Z", "fromLocation": "BEN-SG",
+"toLocation": "KLG-MY", "availableSeats" : 50
+},
+{
+"departureDateTime": "2019-04-30T18:41:41.090Z",
+ "fromLocation": "BEN-SG",
+"toLocation": "KLG-MY", 
+"availableSeats" : 50
+  }
+]          
+          400:
+           body:
+             application/json:
+              type: object
+              properties:
+                status:
+                  type: number
+                  required: true
+                  example: 400
+                message:
+                  type: string
+                  required: true
+                  example: "error message"
+              example:
+                 {
+                   status: 400,
+                   message: "bad request"
+                 }
+    
+
+                   
+              
+          

@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_1d21b09b_c77d_4688_a9b8_a248b2c18c8c_Input_Variables_transportType = String | Null
+

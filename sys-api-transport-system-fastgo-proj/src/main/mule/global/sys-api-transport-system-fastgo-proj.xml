@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd ">
+    <http:listener-config name="sys-api-transport-system-fastgo-proj-httpListenerConfig">
+        <http:listener-connection host="${httplistener.host}" port="${httplistener.port}" />
+    </http:listener-config>
+    <apikit:config name="sys-api-transport-system-fastgo-proj-config" api="sys-api-transport-system-fastgo-proj.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <configuration-properties doc:name="Configuration properties" doc:id="363be2f8-e1b8-45ac-90bf-3da219827df3" file="properties\globalConfiguration.yaml" />
+	<flow name="sys-api-transport-system-fastgo-proj-main">
+        <http:listener config-ref="sys-api-transport-system-fastgo-proj-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="sys-api-transport-system-fastgo-proj-config" />
+    </flow>
+    <flow name="sys-api-transport-system-fastgo-proj-console">
+        <http:listener config-ref="sys-api-transport-system-fastgo-proj-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="sys-api-transport-system-fastgo-proj-config" />
+        </flow>
+    <flow name="get:\(transportType)\(transportCompany)\routes:sys-api-transport-system-fastgo-proj-config">
+     <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core">
+            <ee:variables>
+                <ee:set-variable variableName="transportType"><![CDATA[attributes.uriParams.'transportType']]></ee:set-variable>
+                <ee:set-variable variableName="transportCompany"><![CDATA[attributes.uriParams.'transportCompany']]></ee:set-variable>
+				<ee:set-variable variableName="transactionId" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.headers.transactionId]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		<logger level="INFO" doc:name="request info for routes Logger" doc:id="787281e7-59f3-4f21-bf35-34d362f8bd3e" />
+		<flow-ref doc:name="Flow Reference for getroutes fastgo" doc:id="c76f1ad3-924e-4245-aaf7-624a24178560" name="fastGo-GR-implementationSub_Flow"/>
+		<logger level="INFO" doc:name=" Response for routes Logger" doc:id="a46b122c-6b7b-4f84-8aea-d203a279a302" />
+    </flow>
+    <flow name="get:\(transportType)\(transportCompany)\schedules:sys-api-transport-system-fastgo-proj-config">
+    <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core">
+            <ee:variables>
+                <ee:set-variable variableName="transportType"><![CDATA[attributes.uriParams.'transportType']]></ee:set-variable>
+                <ee:set-variable variableName="transportCompany"><![CDATA[attributes.uriParams.'transportCompany']]></ee:set-variable>
+				<ee:set-variable variableName="transactionId" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.headers.transactionId]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		<logger level="INFO" doc:name="request info for schedules Logger" doc:id="a9e0178f-fc6f-4fde-80dc-aa0caae592bb" />
+		<flow-ref doc:name="Flow Reference for getschedule fastgo" doc:id="96e12468-6955-4abc-b44f-b7976be54512" name="fastGo-GS-implementationSub_Flow"/>
+		<logger level="INFO" doc:name=" Response for schedules Logger" doc:id="fd2c3079-7284-49fb-9ab4-fa66ff5e69f9" />
+    </flow>
+</mule>

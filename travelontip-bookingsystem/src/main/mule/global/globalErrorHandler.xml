@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<error-handler name="globalErrorHandlerError_Handler" doc:id="06f68f68-5639-482d-8648-7b9f0aa4b55f" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c3407e7f-729c-4136-af33-519f78a523a4" type="HTTP:CONNECTIVITY">
+			<ee:transform doc:name="Transform Message" doc:id="1dcece2f-c918-46b4-8904-52cb3bc04562">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{Message:"HTTP Connectivity issue"}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="statusCode"><![CDATA[500]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		
+</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c991a9df-bb5e-4705-9673-b68bdee4328f" type="ANY">
+			<ee:transform doc:name="Transform Message" doc:id="8fc3e12b-bcea-46c9-bf68-4d9a14db4411">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Critical error"}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="statusCode"><![CDATA[500]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+
+		</on-error-propagate>
+	
+</error-handler>
+
+</mule>

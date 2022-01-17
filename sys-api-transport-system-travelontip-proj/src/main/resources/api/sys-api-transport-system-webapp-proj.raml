@@ -1,0 +1,159 @@
+#%RAML 1.0
+title: sys-api-transport-system-travelOntip-proj
+
+/{transportType}:
+  /{transportCompany}:
+    /routes:
+      get:
+        headers:
+          transactionId:
+            required: true
+            type: string
+            example: "hdsfhjdh-jxbv859-sjdf7643-3746bbd"
+        responses:
+          200:
+            body:
+              application/json:
+                type: array
+                items: 
+                  type: object
+                  properties:
+                    originLocation:
+                      type: object
+                      properties:
+                        locationCode:
+                          required: true
+                          type: string
+                          example: "BEN-SG"
+                    destinationLocation:
+                      type: object
+                      properties:
+                        locationCode:
+                          required: true
+                          type: string
+                          example: "KLG-MY"                          
+                example:
+                    [
+                                   {
+                             "originLocation":
+                        {
+                          "locationCode": "KLG-MY"
+                        },
+                        "destinationLocation":
+                        {
+                          "locationCode": "BEN-SG"
+                        }},
+                     {
+                      "originLocation":
+                        {
+                          "locationCode": "KLG-MY"
+                        },
+                        "destinationLocation":
+                        {
+                          "locationCode": "BEN-SG" }  }]
+          400:
+           body:
+             application/json:
+              type: object
+              properties:
+                status:
+                  type: number
+                  required: true
+                  example: 400
+                message:
+                  type: string
+                  required: true
+                  example: "error message"
+              example:
+                 {
+                   status: 400,
+                   message: "bad request"
+                 }                
+    /schedules:
+      get:      
+        headers:
+          transactionId:
+            required: true
+            type: string
+            example: "hdsfhjdh-jxbv859-sjdf7643-3746bbd"
+        queryParameters:
+          departureLocationCode:
+            required: false
+            type: string
+            example: "BEN-SG"              
+          destinationLocationCode: 
+            required: false
+            type: string
+            example: "KLG-MY"
+        responses:
+          200:
+            body:
+              application/json:
+                type: array
+                items: 
+                  type: object
+                  properties:
+                    availableSeats:
+                      required: true
+                      type: number
+                      example: 20
+                    departureDateTime:
+                      required: true
+                      type: string
+                      example: "2019-04-30T16:41:41.090Z"  
+                    travelRoute:
+                      type: object
+                      properties:
+                         destinationLocation:
+                           type: object
+                           properties:
+                             locationCode:
+                              required: true
+                              type: string
+                              example: "KLG-MY"                          
+                example:
+                    [
+   {
+      "availableSeats":20,
+      "departureDateTime":"2019-04-30T16:41:41.090Z",
+      "travelRoute":{
+         "destinationLocation":{
+            "locationCode":"KLG-MY"
+         },
+         "originLocation":{
+            "locationCode":"BEN-SG"
+         }
+      }
+   },
+   {
+      "availableSeats":30,
+      "departureDateTime":"2019-04-30T16:41:41.090Z",
+      "travelRoute":{
+         "destinationLocation":{
+            "locationCode":"KLG-MY"
+         },
+         "originLocation":{
+            "locationCode":"BL-SG"
+         }
+      }
+   }
+]
+          400:
+           body:
+             application/json:
+              type: object
+              properties:
+                status:
+                  type: number
+                  required: true
+                  example: 400
+                message:
+                  type: string
+                  required: true
+                  example: "error message"
+              example:
+                 {
+                   status: 400,
+                   message: "bad request"
+                 }             
+                       

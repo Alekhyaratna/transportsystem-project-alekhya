@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="a099ec70-0263-481e-9784-87348e5299e4" >
+		<http:request-connection host="${httprequester.host}" port="${httprequester.port}" />
+	</http:request-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="83b308e2-d952-417a-9c29-4bf1503c54fd" file="properties\globalConfiguration.yaml" />
+	<sub-flow name="sys-api-travelOnTip-GR-implementationSub_Flow" doc:id="d8a17f6b-3c1d-453c-b34d-3ed308bf1bf9" >
+		<http:request method="GET" doc:name="Request" doc:id="3e12f69d-e4f1-4a4e-ac71-2f4464bfd588" config-ref="HTTP_Request_configuration" path="/travelOnTip/routes">
+			<http:headers ><![CDATA[#[output application/json
+---
+{
+	"transactionId" : vars.transactionId
+}]]]></http:headers>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="6c44a4c7-4ea5-40b5-a3aa-09d70b2ed65d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map(value,index)->
+ {
+                             "originLocation":
+                        {
+                          "locationCode": value.OriginLocationCode
+                        },
+                        "destinationLocation":
+                        {
+                          "locationCode": value.destinationLocationCode 
+                        }}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>

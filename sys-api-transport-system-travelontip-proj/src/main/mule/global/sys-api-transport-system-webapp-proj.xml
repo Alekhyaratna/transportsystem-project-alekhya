@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+    <http:listener-config name="sys-api-transport-system-webapp-proj-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8083" />
+    </http:listener-config>
+    <apikit:config name="sys-api-transport-system-webapp-proj-config" api="sys-api-transport-system-webapp-proj.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <configuration doc:name="Configuration" doc:id="a488dc52-c4b1-4117-acf9-6d3389ce7659" defaultErrorHandler-ref="globalErrorHandlerError_Handler" />
+	<flow name="sys-api-transport-system-webapp-proj-main">
+        <http:listener config-ref="sys-api-transport-system-webapp-proj-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="sys-api-transport-system-webapp-proj-config" />
+        </flow>
+    <flow name="sys-api-transport-system-webapp-proj-console">
+        <http:listener config-ref="sys-api-transport-system-webapp-proj-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="sys-api-transport-system-webapp-proj-config" />
+        </flow>
+    <flow name="get:\(transportType)\(transportCompany)\routes:sys-api-transport-system-webapp-proj-config">
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core">
+            <ee:variables>
+                <ee:set-variable variableName="transportType"><![CDATA[attributes.uriParams.'transportType']]></ee:set-variable>
+                <ee:set-variable variableName="transportCompany"><![CDATA[attributes.uriParams.'transportCompany']]></ee:set-variable>
+				<ee:set-variable variableName="transactionId" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.headers.transactionId]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		<logger level="INFO" doc:name="request info for routes Logger" doc:id="bf0e50ab-798e-4cc7-a9b2-3ea39ed230a7" message="Request Recieved for sys-api routes for transactionId---#[vars.transactionId]"/>
+		<flow-ref doc:name="Flow Reference for getroutes subflow from implementation" doc:id="7bc5beb0-a1e4-4d53-9231-b53c2302606e" name="sys-api-travelOnTip-GR-implementationSub_Flow"/>
+		<logger level="INFO" doc:name=" Response for routes Logger" doc:id="0fd5ac29-bc92-4f75-943c-ec0b235312e4" message="Response sent for sys-api routes for transactionId---#[vars.transactionId]"/>
+    </flow>
+	<flow name="get:\(transportType)\(transportCompany)\schedules:sys-api-transport-system-webapp-proj-config">
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core">
+            <ee:variables>
+                <ee:set-variable variableName="transportType"><![CDATA[attributes.uriParams.'transportType']]></ee:set-variable>
+                <ee:set-variable variableName="transportCompany"><![CDATA[attributes.uriParams.'transportCompany']]></ee:set-variable>
+				<ee:set-variable variableName="transactionId" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.headers.transactionId]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		<logger level="INFO" doc:name="request logger for schedules " doc:id="b5134bde-1580-4969-928a-1eba1eb8b846" message="Request Recieved for sys-api schedules for transactionId---#[vars.transactionId]"/>
+		<flow-ref doc:name="Flow Reference for Getschedules subflow from implementation" doc:id="99755656-6008-40e8-870f-4e73b91508a3" name="sys-api-travelOnTip-GS-implementationSub_Flow"/>
+		<logger level="INFO" doc:name="response for schedules logger" doc:id="c79fc016-10a7-459a-8afe-9c8299e9b35a" message="Response sent for sys-api schedules for transactionId---#[vars.transactionId]"/>
+    </flow>
+</mule>

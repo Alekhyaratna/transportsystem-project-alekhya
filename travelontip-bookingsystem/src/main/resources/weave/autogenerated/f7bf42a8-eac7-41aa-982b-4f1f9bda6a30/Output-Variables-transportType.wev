@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_f7bf42a8_eac7_41aa_982b_4f1f9bda6a30_Output_Variables_transportType = String | Null
+

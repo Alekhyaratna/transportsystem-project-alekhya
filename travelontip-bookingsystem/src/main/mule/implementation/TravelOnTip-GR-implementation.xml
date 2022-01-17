@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="19a0d87c-febe-47e6-b851-3262cbe5158b" >
+		<db:my-sql-connection host="${database.host}" port="${database.port}" user="${database.user}" password="${database.password}" database="${database.schema}" />
+	</db:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="d8451204-ad86-4b4b-bd72-b0e49991a28c" file="properties\global_configurations.yaml" />
+	<sub-flow name="TravelOnTip-GR-implementationFlow" doc:id="90edad29-ca4f-4522-9386-03c4a2705e2a" >
+		<db:select doc:name="Select routes for travelOnTip" doc:id="cb26741e-2553-4412-8c81-92eb19eb1489" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from transportsystem.routes where companyName= "travelOnTip"]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transformed response from db" doc:id="bb2e0ac9-b042-4473-b276-1f7604f8bac3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>

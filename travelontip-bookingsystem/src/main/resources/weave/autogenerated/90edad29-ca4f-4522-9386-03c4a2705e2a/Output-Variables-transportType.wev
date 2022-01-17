@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_90edad29_ca4f_4522_9386_03c4a2705e2a_Output_Variables_transportType = String | Null
+
